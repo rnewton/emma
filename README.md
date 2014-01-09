@@ -1,12 +1,10 @@
 # emma #
-====
 
 Simple Lua Entity Framework using tags. emma is a way to organize objects (as classes using middleclass) and perform operations on them without having to manually keep track of instantiated objects. This is intended for use in a game engine. 
 
 See main.lua for a full example that will run in löve. This framework should technically work in an lua environment, but I happen to like löve. 
 
 ### Usage: ###
-====
 
 	-- place wherever you need it
 	local emma = require 'path.to.emma'
@@ -23,12 +21,10 @@ Entity includes 3 functions that aren't required, but are helpful.
 By default, these functions don't do anything. 
 
 ### Mixins: ###
-===
 
 middle class also enables the use of mixins. See their documentation (or main.lua) for example usage. 
 
 ### Available functions: ###
-====
 
 	--[[
 	Adds a class to the Entity pool with the given tags. The class can be instantiated after this.
