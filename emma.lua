@@ -68,9 +68,21 @@ Private function that checks if the class exists in the Entity Pool
 --]]
 local _classExists = function(name)
 	for _,v in pairs(_entities) do 
-		if v == name then return true end
+		if v.name == name then return true end
 	end
 	return false
+end
+
+--[[
+Private function that checks if the class should use emma's recycling
+@param string name - class name to check for
+@returns bool - true if class recycles, false otherwise
+--]]
+local _classRecycles = function(name)
+	if not _classExists(name) then error("emma: Class doesn't exist", 3) end
+	for _,v in pairs(_entities) do 
+		if v.name == name then return v.cleanup end
+	end
 end
 
 --[[
@@ -78,7 +90,7 @@ Adds a class to the Entity pool with the given tags. The class can be instantiat
 @param string class - class name that is subclassed from Entity
 @param table tags - list of string tags that categorize this class (required)
 --]]
-function Emma.addEntity(class, tags)
+function Emma.addEntity(class, tags, cleanup)
 	if class == nil then error("emma: Class is nil", 3) end
 	if tags == nil or #tags == 0 then error("emma: No tags given", 3) end
 	if _classExists(class) then error("emma: Class already exists in Entity Pool", 3) end
@@ -88,7 +100,10 @@ function Emma.addEntity(class, tags)
 	if not subclassOf(Entity, class) then error("emma: Class is not an Entity subclass", 3) end
 
 	-- add entity to pool
-	table.insert(_entities, name)
+	table.insert(_entities, {
+		['name'] = name,
+		['cleanup'] = cleanup or false
+	})
 
 	-- add tag references
 	for _,tag in pairs(tags) do 
@@ -112,13 +127,15 @@ function Emma.instantiate(class, ...)
 	class = _nameToClass(class)
 
 	-- loop over instances to see if we can recycle
-	for i,info in pairs(_instances) do 
-		-- if inactive and of the right type
-		if info.active == false and instanceOf(class, info.instance) then 
-			-- reset and return
-			_instances[i].instance:start()
-			_instances[i].active = true
-			return _instances[i].instance 
+	if _classRecycles(class.name) then
+		for i,info in pairs(_instances) do 
+			-- if inactive and of the right type
+			if info.active == false and instanceOf(class, info.instance) then 
+				-- reset and return
+				_instances[i].instance:start()
+				_instances[i].active = true
+				return _instances[i].instance 
+			end
 		end
 	end
 	-- create a new instance
@@ -176,7 +193,11 @@ function Emma.destroy(instance)
 	-- find correct instance to destroy
 	for i,info in pairs(_instances) do 
 		if info.active == true and info.instance._uniq == instance._uniq then
-			_instances[i].active = false
+			if _classRecycles(instance.class.name) then
+				_instances[i].active = false
+			else
+				_instances[i] = nil
+			end
 		end
 	end
 end
