@@ -130,7 +130,7 @@ function Emma.instantiate(class, ...)
 	if _classRecycles(class.name) then
 		for i,info in pairs(_instances) do 
 			-- if inactive and of the right type
-			if info.active == false and instanceOf(class, info.instance) then 
+			if info.active == false and isInstanceOf(class, info.instance) then 
 				-- reset and return
 				_instances[i].instance:start()
 				_instances[i].active = true
@@ -175,7 +175,7 @@ function Emma.findAll(tags)
 		for _,info in pairs(_instances) do 
 			for _,class in pairs(classes) do 
 				class = _nameToClass(class)
-				if info.active == true and instanceOf(class, info.instance) then 
+				if info.active == true and isInstanceOf(class, info.instance) then 
 					table.insert(instances, info.instance)
 				end
 			end
