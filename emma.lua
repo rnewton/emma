@@ -139,7 +139,7 @@ function Emma.instantiate(class, ...)
 		end
 	end
 	-- create a new instance
-	table.insert(_instances, {['instance'] = class:new(unpack(arg)), ['active'] = true})
+	table.insert(_instances, {['instance'] = class:new(...), ['active'] = true})
 	_instances[#_instances].instance._uniq = #_instances
 	_instances[#_instances].instance:start()
 	return _instances[#_instances].instance
