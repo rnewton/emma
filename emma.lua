@@ -97,7 +97,7 @@ function Emma.addEntity(class, tags, cleanup)
 
 	local name = class
 	class = _nameToClass(name)
-	if not subclassOf(Entity, class) then error("emma: Class is not an Entity subclass", 3) end
+	if not class:isSubclassOf(Entity) then error("emma: Class is not an Entity subclass", 3) end
 
 	-- add entity to pool
 	table.insert(_entities, {
